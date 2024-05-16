@@ -3,6 +3,8 @@ package commands
 import (
 	"errors"
 
+	"github.com/4strodev/raven/pkg/features/project"
+	"github.com/spf13/afero"
 	"github.com/urfave/cli/v2"
 )
 
@@ -20,19 +22,19 @@ var Create = &cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 		if !ctx.Args().Present() {
-			return errors.New("Put the target directory")
+			return errors.New("Specify a project name")
 		}
 
 		if ctx.Args().Len() > 1 {
 			return errors.New("Expected only 1 argument")
 		}
 
-		targetDirectory := ctx.Args().Get(0)
+		projectName := ctx.Args().Get(0)
 		templateName := ctx.String("template")
 
 		// Execute action
-
-		return nil
+		fileSystem := afero.NewOsFs()
+		return project.CreateProject(fileSystem, projectName, templateName)
 	},
 	Args: true,
 }
